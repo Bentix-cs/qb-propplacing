@@ -1,6 +1,11 @@
 QBCore = exports['qb-core']:GetCoreObject()
 
-AddEventHandler('ev-propplacing:client:placeProp', function(item, prop, itemid)
+RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    TriggerServerEvent('qb-propplacing:server:initProps')
+end)
+
+AddEventHandler('qb-propplacing:client:placeProp', function(item, prop, itemid)
     if not IsPedInAnyVehicle(PlayerPedId(), true) and not IsEntityDead(PlayerPedId()) then
         StartPropPlacing(item, prop, itemid)
     end
@@ -17,7 +22,7 @@ function StartPropPlacing(item, prop, itemid)
     SetEntityAlpha(placedProp, 150, true)
     SetEntityCollision(placedProp, false, false)
     SetEntityHeading(placedProp, playerHeading)
-    
+
     if IsPedInAnyVehicle(ped) or IsEntityDead(ped) then
         return
     end
@@ -125,25 +130,12 @@ function StartPropPlacing(item, prop, itemid)
 end
 
 function PlacePropFinal(prop, item, itemid)
-    TriggerServerEvent('ev-propplacing:server:savePersistentProp', GetEntityCoords(prop, false), GetEntityHeading(prop), GetEntityModel(prop), item, itemid)
+    TriggerServerEvent('qb-propplacing:server:savePersistentProp', GetEntityCoords(prop, false), GetEntityHeading(prop), GetEntityModel(prop), item, itemid)
     DeleteEntity(prop)
 end
 
 
-
---[[Citizen.CreateThread(function()
-    TriggerServerEvent('ev-propplacing:server:initProps')
-    while true do
-        Wait(1)
-        local ped = PlayerPedId()
-        if IsControlJustPressed(0, 52) and not IsPedInAnyVehicle(ped) and not IsEntityDead(ped) then
-            TriggerServerEvent('ev-propplacing:server:deletePersistentProp', GetEntityCoords(ped))
-        end
-    end
-end)]]
-
-
-RegisterNetEvent('ev-propplacing:client:playAnimation', function()
+RegisterNetEvent('qb-propplacing:client:playAnimation', function()
     while (not HasAnimDictLoaded("random@mugging1")) do
         RequestAnimDict("random@mugging1")
         Wait(10)
@@ -151,8 +143,8 @@ RegisterNetEvent('ev-propplacing:client:playAnimation', function()
     TaskPlayAnim(PlayerPedId(), "random@mugging1", "pickup_low", 1.0, 1.0, -1, 0, 0, 0, 0, 0)
 end)
 
-RegisterNetEvent('ev-propplacing:client:addTarget', function(entity)
-    while not DoesEntityExist(NetToObj(entity)) do 
+RegisterNetEvent('qb-propplacing:client:addTarget', function(entity)
+    while not DoesEntityExist(NetToObj(entity)) do
         Wait(10)
     end
     local prop = NetToObj(entity)
@@ -199,7 +191,7 @@ function setupScaleform(scaleform)
 
     PushScaleformMovieFunction(scaleform, "CLEAR_ALL")
     EndScaleformMovieMethod()
-    
+
     PushScaleformMovieFunction(scaleform, "SET_CLEAR_SPACE")
     PushScaleformMovieFunctionParameterInt(200)
     EndScaleformMovieMethod()
@@ -210,45 +202,45 @@ function setupScaleform(scaleform)
     Button(GetControlInstructionalButton(2, 33, true))
     Button(GetControlInstructionalButton(2, 34, true))
     Button(GetControlInstructionalButton(2, 32, true))
-    ButtonMessage("Bewegen")
+    ButtonMessage("Move")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(1)
     Button(GetControlInstructionalButton(2, 46, true))
     Button(GetControlInstructionalButton(2, 44, true))
-    ButtonMessage("Hoch/Runter")
+    ButtonMessage("Up/Down")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(2)
     Button(GetControlInstructionalButton(2, 73, true))
     Button(GetControlInstructionalButton(2, 48, true))
-    ButtonMessage("Drehen")
+    ButtonMessage("Rotate")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(3)
     Button(GetControlInstructionalButton(2, 250, true))
-    ButtonMessage("Auf Boden zurücksetzten")
+    ButtonMessage("Reset to ground")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(4)
     Button(GetControlInstructionalButton(2, 21, true))
-    ButtonMessage("Beschleunigen")
+    ButtonMessage("Speed up")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(5)
     Button(GetControlInstructionalButton(2, 194, true))
-    ButtonMessage("Abbrechen")
+    ButtonMessage("Cancel")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(6)
     Button(GetControlInstructionalButton(2, 191, true))
-    ButtonMessage("Bestätigen")
+    ButtonMessage("Place")
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_BACKGROUND_COLOUR")
@@ -260,7 +252,7 @@ function setupScaleform(scaleform)
 
     PushScaleformMovieFunction(scaleform, "SET_BACKGROUND")
     EndScaleformMovieMethod()
-    
+
     PushScaleformMovieFunction(scaleform, "DRAW_INSTRUCTIONAL_BUTTONS")
     EndScaleformMovieMethod()
 

@@ -2,14 +2,14 @@ QBCore = exports['qb-core']:GetCoreObject()
 local props = {}
 local spawned = false
 
-RegisterNetEvent('ev-propplacing:server:savePersistentProp', function(coords, heading, model, item, itemid)
+RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, heading, model, item, itemid)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local itemexact = Player.Functions.GetItemByName(item)
     Wait(100)
     Player.Functions.RemoveItem(item, 1)
     local propId = GeneratePropId()
-    exports.oxmysql:execute('INSERT INTO props (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(itemexact.info)}, function(result) 
+    exports.oxmysql:execute('INSERT INTO qb-propplacing (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(itemexact.info)}, function(result)
         local prop = CreateObjectNoOffset(model, coords.x, coords.y, coords.z, true, false, false)
         SetEntityHeading(prop, heading)
         FreezeEntityPosition(prop, true)
@@ -17,12 +17,12 @@ RegisterNetEvent('ev-propplacing:server:savePersistentProp', function(coords, he
         Entity(prop).state.propid = propId
         Entity(prop).state.metadata = itemexact.info
         props[#props+1] = prop
-        TriggerClientEvent('ev-propplacing:client:playAnimation', src)
-        TriggerClientEvent('ev-propplacing:client:addTarget', -1, NetworkGetNetworkIdFromEntity(prop))
+        TriggerClientEvent('qb-propplacing:client:playAnimation', src)
+        TriggerClientEvent('qb-propplacing:client:addTarget', -1, NetworkGetNetworkIdFromEntity(prop))
     end)
 end)
 
-RegisterNetEvent('ev-propplacing:server:deletePersistentProp', function(playerCoords)
+RegisterNetEvent('qb-propplacing:server:deletePersistentProp', function(playerCoords)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local closestDist = -1
@@ -44,17 +44,17 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentProp', function(playerCo
     local id = Entity(closestProp).state.propid
     local metadata = Entity(closestProp).state.metadata
 
-    exports.oxmysql:execute('DELETE FROM props WHERE id = ?', {id}, function()
+    exports.oxmysql:execute('DELETE FROM qb-propplacing WHERE id = ?', {id}, function()
         TriggerClientEvent('ev-propplacing:client:playAnimation', src)
         Wait(1000)
         Player.Functions.AddItem(item, 1, false, metadata)
         DeleteEntity(closestProp)
-        TriggerClientEvent('QBCore:Notify', src, "Objekt erfolgreich aufgehoben!", "success")
+        TriggerClientEvent('QBCore:Notify', src, "Item successfully taken!", "success")
     end)
 end)
 
 RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(entity)
-    while not DoesEntityExist(NetworkGetEntityFromNetworkId(entity)) do 
+    while not DoesEntityExist(NetworkGetEntityFromNetworkId(entity)) do
         Wait(10)
     end
     local src = source
@@ -65,20 +65,20 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(e
     local id = Entity(prop).state.propid
     local metadata = Entity(prop).state.metadata
 
-    exports.oxmysql:execute('DELETE FROM props WHERE id = ?', {id}, function()
+    exports.oxmysql:execute('DELETE FROM qb-propplacing WHERE id = ?', {id}, function()
         TriggerClientEvent('ev-propplacing:client:playAnimation', src)
         Wait(1000)
         Player.Functions.AddItem(item, 1, false, metadata)
         DeleteEntity(prop)
-        TriggerClientEvent('QBCore:Notify', src, "Objekt erfolgreich aufgehoben!", "success")
+        TriggerClientEvent('QBCore:Notify', src, "Item successfully taken!", "success")
     end)
 end)
 
 
-RegisterNetEvent('ev-propplacing:server:initProps')
-AddEventHandler('ev-propplacing:server:initProps', function()
+RegisterNetEvent('qb-propplacing:server:initProps')
+AddEventHandler('qb-propplacing:server:initProps', function()
     if not spawned then
-        exports.oxmysql:execute('SELECT * FROM props', function(result)
+        exports.oxmysql:execute('SELECT * FROM qb-propplacing', function(result)
             if result[1] then
                 for i = 1, (#result), 1 do
                     local coords = vector3(result[i].x, result[i].y, result[i].z)
@@ -89,7 +89,7 @@ AddEventHandler('ev-propplacing:server:initProps', function()
                     Entity(prop).state.propid = result[i].id
                     Entity(prop).state.metadata = json.decode(result[i].metadata)
                     props[#props+1] = prop
-                    TriggerClientEvent('ev-propplacing:client:addTarget', -1, NetworkGetNetworkIdFromEntity(prop))
+                    TriggerClientEvent('qb-propplacing:client:addTarget', -1, NetworkGetNetworkIdFromEntity(prop))
                 end
             end
         end)
@@ -111,7 +111,7 @@ end)
 
 function GeneratePropId()
     local TID = QBCore.Shared.RandomStr(3) .. "-" ..  QBCore.Shared.RandomStr(3) .. "-" .. QBCore.Shared.RandomStr(3)
-    local result = exports.oxmysql:executeSync('SELECT * FROM props WHERE id = ?', {TID})
+    local result = exports.oxmysql:executeSync('SELECT * FROM qb-propplacing WHERE id = ?', {TID})
     Wait(10)
     if result[1] then
         return GenerateTempId()
