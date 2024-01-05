@@ -2,7 +2,7 @@ QBCore = exports['qb-core']:GetCoreObject()
 local props = {}
 local spawned = false
 
-RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, heading, model, item, itemid)
+RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, heading, model, item)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local itemexact = Player.Functions.GetItemByName(item)

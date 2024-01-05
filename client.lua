@@ -5,13 +5,13 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     TriggerServerEvent('qb-propplacing:server:initProps')
 end)
 
-AddEventHandler('qb-propplacing:client:placeProp', function(item, prop, itemid)
+AddEventHandler('qb-propplacing:client:placeProp', function(item, prop)
     if not IsPedInAnyVehicle(PlayerPedId(), true) and not IsEntityDead(PlayerPedId()) then
-        StartPropPlacing(item, prop, itemid)
+        StartPropPlacing(item, prop)
     end
 end)
 
-function StartPropPlacing(item, prop, itemid)
+function StartPropPlacing(item, prop)
     local ped = PlayerPedId()
     local playerCoords = GetEntityCoords(ped, true)
     local playerHeading = GetEntityHeading(ped)
@@ -130,7 +130,7 @@ function StartPropPlacing(item, prop, itemid)
 end
 
 function PlacePropFinal(prop, item, itemid)
-    TriggerServerEvent('qb-propplacing:server:savePersistentProp', GetEntityCoords(prop, false), GetEntityHeading(prop), GetEntityModel(prop), item, itemid)
+    TriggerServerEvent('qb-propplacing:server:savePersistentProp', GetEntityCoords(prop, false), GetEntityHeading(prop), GetEntityModel(prop), item)
     DeleteEntity(prop)
 end
 

@@ -31,7 +31,7 @@ and add below:
 
 ```lua
 RegisterNUICallback("placeItem", function(data)
-    TriggerEvent('qb-propplacing:client:placeProp', data['item'], data['prop'], data['exact'])
+    TriggerEvent('qb-propplacing:client:placeProp', data['item'], data['prop'])
 end)
 ```
 
@@ -94,3 +94,10 @@ if (qbitems[$(el).parent().attr('name')].prop) {
         base = base + '<div class="dropdown-option shadow-pop-br" onclick="placeItem(\'' + $(el).parent().attr('name') + '\', \'' + qbitems[$(el).parent().attr('name')].prop + '\')">' + getText('place') + '</div>';
     }
 ```
+
+## How to add a placeable item
+Just add `prop = 'NAME OF THE PROP',` for the desired item in your qb-core items.lua
+
+Make sure the prop works with qb-target because some of them don't have collision
+
+List of props https://forge.plebmasters.de/objects/
