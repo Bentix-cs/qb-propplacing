@@ -45,7 +45,7 @@ Search in core_inventory/config.lua:
 and add below:
 
 ```lua
-['place'] = 'PLATZIEREN',
+['place'] = 'PLACE',
 ```
 
 ### Step 5
