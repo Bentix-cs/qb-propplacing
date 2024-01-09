@@ -82,8 +82,17 @@ function placeItem(name, prop) {
 Search in core_inventory/html/script.js:
 
 ```lua
-if ($(el).parent().attr('inventory') == 'content-' + cid && $(el).parent().attr('category') != 'weapons' && $(el).parent().attr('category') != 'food' && $(el).parent().attr('category') != 'drinks') {
-        base = base + '<div class="dropdown-option shadow-pop-br" onclick="useItem(\'' + $(el).parent().attr('name') + '\', \'' + $(el).parent().attr('id') + '\')">' + getText('use') + '</div>';
+if (
+      $(el).parent().attr('inventory') == 'content-' + cid &&
+      $(el).parent().attr('category') == 'weapons'
+    ) {
+      base =
+        base +
+        '<div class="dropdown-option shadow-pop-br" onclick="openAttachemnts(\'' +
+        $(el).parent().attr('id') +
+        '\')">' +
+        getText('attachments') +
+        '</div>'
     }
 ```
 
@@ -91,7 +100,15 @@ and add below:
 
 ```lua
 if (qbitems[$(el).parent().attr('name')].prop) {
-        base = base + '<div class="dropdown-option shadow-pop-br" onclick="placeItem(\'' + $(el).parent().attr('name') + '\', \'' + qbitems[$(el).parent().attr('name')].prop + '\')">' + getText('place') + '</div>';
+      base =
+        base +
+        '<div class="dropdown-option shadow-pop-br" onclick="placeItem(\'' +
+        $(el).parent().attr('name') +
+        "', '" +
+        qbitems[$(el).parent().attr('name')].prop +
+        '\')">' +
+        getText('place') +
+        '</div>'
     }
 ```
 
