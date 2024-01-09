@@ -13,7 +13,7 @@ A small script for qb-core that adds the ability to place props with [core_inven
 - qb-core
 
 ### Step 1
-Rename the resource from "main-qb-propplacing" to "qb-propplacing" and put it into your resoucres folder.
+Rename the resource from "main-qb-propplacing" to "qb-propplacing" and put it into your resources folder.
 
 ### Step 2
 Import the import.sql file into your db.
