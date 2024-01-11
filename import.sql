@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `qb-propplacing` (
+CREATE TABLE IF NOT EXISTS `qb_propplacing` (
   `id` varchar(50) DEFAULT NULL,
   `model` int(11) DEFAULT NULL,
   `item` varchar(50) DEFAULT NULL,

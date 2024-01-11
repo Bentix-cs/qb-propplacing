@@ -6,6 +6,10 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
 end)
 
 AddEventHandler('qb-propplacing:client:placeProp', function(item, prop)
+    if not prop then
+        QBCore.Functions.Notify(Lang:t('message.notplaceable'), 'error')
+        return
+    end
     if not IsPedInAnyVehicle(PlayerPedId(), true) and not IsEntityDead(PlayerPedId()) then
         StartPropPlacing(item, prop)
     end
@@ -17,14 +21,19 @@ function StartPropPlacing(item, prop)
     local playerHeading = GetEntityHeading(ped)
     local propCoords = GetOffsetFromEntityInWorldCoords(ped, 0, 0.9, 0)
 
+    if IsPedInAnyVehicle(ped) or IsEntityDead(ped) then
+        return
+    end
+
     local placedProp = CreateObjectNoOffset(GetHashKey(prop), propCoords, false, false, false)
     PlaceObjectOnGroundProperly(placedProp)
     SetEntityAlpha(placedProp, 150, true)
     SetEntityCollision(placedProp, false, false)
     SetEntityHeading(placedProp, playerHeading)
 
-    if IsPedInAnyVehicle(ped) or IsEntityDead(ped) then
-        return
+    if Config.AddOutline then
+        SetEntityDrawOutline(placedProp, true)
+        SetEntityDrawOutlineColor(placedProp, 255, 255, 255, 255)
     end
 
     local form = setupScaleform("instructional_buttons")
@@ -153,7 +162,7 @@ RegisterNetEvent('qb-propplacing:client:addTarget', function(entity)
             {
                 num = 1,
                 targeticon = 'fas fa-hand',
-                label = 'Aufheben',
+                label = Lang:t("target.pickup"),
                 action = function(entity)
                     local ped = PlayerPedId()
                     if IsPedInAnyVehicle(ped) or IsEntityDead(ped) then
@@ -202,45 +211,45 @@ function setupScaleform(scaleform)
     Button(GetControlInstructionalButton(2, 33, true))
     Button(GetControlInstructionalButton(2, 34, true))
     Button(GetControlInstructionalButton(2, 32, true))
-    ButtonMessage("Move")
+    ButtonMessage(Lang:t("tips.move"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(1)
     Button(GetControlInstructionalButton(2, 46, true))
     Button(GetControlInstructionalButton(2, 44, true))
-    ButtonMessage("Up/Down")
+    ButtonMessage(Lang:t("tips.updown"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(2)
     Button(GetControlInstructionalButton(2, 73, true))
     Button(GetControlInstructionalButton(2, 48, true))
-    ButtonMessage("Rotate")
+    ButtonMessage(Lang:t("tips.rotate"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(3)
     Button(GetControlInstructionalButton(2, 250, true))
-    ButtonMessage("Reset to ground")
+    ButtonMessage(Lang:t("tips.resettoground"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(4)
     Button(GetControlInstructionalButton(2, 21, true))
-    ButtonMessage("Speed up")
+    ButtonMessage(Lang:t("tips.speed"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(5)
     Button(GetControlInstructionalButton(2, 194, true))
-    ButtonMessage("Cancel")
+    ButtonMessage(Lang:t("tips.cancel"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(6)
     Button(GetControlInstructionalButton(2, 191, true))
-    ButtonMessage("Place")
+    ButtonMessage(Lang:t("tips.place"))
     EndScaleformMovieMethod()
 
     PushScaleformMovieFunction(scaleform, "SET_BACKGROUND_COLOUR")
