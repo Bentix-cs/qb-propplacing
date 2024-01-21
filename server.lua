@@ -42,7 +42,7 @@ RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, he
     end
 end)
 
-RegisterNetEvent('qb-propplacing:server:deletePersistentProp', function(playerCoords)
+--[[RegisterNetEvent('qb-propplacing:server:deletePersistentProp', function(playerCoords)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local closestDist = -1
@@ -75,7 +75,7 @@ RegisterNetEvent('qb-propplacing:server:deletePersistentProp', function(playerCo
         DeleteEntity(closestProp)
         TriggerClientEvent('QBCore:Notify', src, Lang:t("message.itempickup"), "success")
     end)
-end)
+end)]]--
 
 RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(entity)
     while not DoesEntityExist(NetworkGetEntityFromNetworkId(entity)) do
@@ -89,7 +89,12 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(e
     local id = Entity(prop).state.propid
     local metadata = Entity(prop).state.metadata
 
+    if not props[entity] then
+        return
+    end
+
     exports.oxmysql:execute('DELETE FROM qb_propplacing WHERE id = ?', {id}, function()
+        table.remove(props, entity)
         TriggerClientEvent('qb-propplacing:client:playAnimation', src)
         Wait(1000)
         if Config.Inventory == 'qb-inventory' then
