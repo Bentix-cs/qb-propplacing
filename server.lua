@@ -77,6 +77,15 @@ end)
     end)
 end)]]--
 
+local function indexOf(table, element)
+    for i, value in ipairs(table) do
+        if value == element then
+            return i
+        end
+    end
+    return nil
+end
+
 RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(entity)
     while not DoesEntityExist(NetworkGetEntityFromNetworkId(entity)) do
         Wait(10)
@@ -89,12 +98,12 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(e
     local id = Entity(prop).state.propid
     local metadata = Entity(prop).state.metadata
 
-    if not props[prop] then
+    if not indexOf(props, prop) then
         return
     end
 
     exports.oxmysql:execute('DELETE FROM qb_propplacing WHERE id = ?', {id}, function()
-        table.remove(props, prop)
+        table.remove(props, indexOf(props, prop))
         TriggerClientEvent('qb-propplacing:client:playAnimation', src)
         Wait(1000)
         if Config.Inventory == 'qb-inventory' then

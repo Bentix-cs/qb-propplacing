@@ -11,7 +11,7 @@ fx_version 'cerulean'
 games { 'gta5' }
 
 author 'Ben'
-description 'QB Prop placing'
+description 'qb-propplacing'
 version '1.0.0'
 
 lua54 'yes'
