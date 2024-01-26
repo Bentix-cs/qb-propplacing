@@ -89,12 +89,12 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(e
     local id = Entity(prop).state.propid
     local metadata = Entity(prop).state.metadata
 
-    if not props[entity] then
+    if not props[prop] then
         return
     end
 
     exports.oxmysql:execute('DELETE FROM qb_propplacing WHERE id = ?', {id}, function()
-        table.remove(props, entity)
+        table.remove(props, prop)
         TriggerClientEvent('qb-propplacing:client:playAnimation', src)
         Wait(1000)
         if Config.Inventory == 'qb-inventory' then
