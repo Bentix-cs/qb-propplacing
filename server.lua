@@ -9,7 +9,7 @@ RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, he
     if Config.Inventory == 'qb-inventory' then
 
         local propId = GeneratePropId()
-        exports.oxmysql:execute('INSERT INTO qb_propplacing (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item.name, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(item.info)}, function(result)
+        MySQL.Async.execute('INSERT INTO qb_propplacing (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item.name, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(item.info)}, function(result)
             local prop = CreateObjectNoOffset(model, coords.x, coords.y, coords.z, true, false, false)
             SetEntityHeading(prop, heading)
             FreezeEntityPosition(prop, true)
@@ -26,7 +26,7 @@ RegisterNetEvent('qb-propplacing:server:savePersistentProp', function(coords, he
         local itemexact = Player.Functions.GetItemByName(item)
 
         local propId = GeneratePropId()
-        exports.oxmysql:execute('INSERT INTO qb_propplacing (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(itemexact.info)}, function(result)
+        MySQL.Async.execute('INSERT INTO qb_propplacing (id, model, item, x, y, z, heading, citizen, metadata) VALUES (@id, @model, @item, @x, @y, @z, @heading, @citizen, @metadata)', {['@id'] = propId, ['@model'] = model, ['@item'] = item, ['@x'] = coords.x, ['@y'] = coords.y, ['@z'] = coords.z, ['@heading'] = heading, ["@citizen"] = Player.PlayerData.citizenid, ["@metadata"] = json.encode(itemexact.info)}, function(result)
             local prop = CreateObjectNoOffset(model, coords.x, coords.y, coords.z, true, false, false)
             SetEntityHeading(prop, heading)
             FreezeEntityPosition(prop, true)
@@ -102,7 +102,7 @@ RegisterNetEvent('ev-propplacing:server:deletePersistentPropByNetID', function(e
         return
     end
 
-    exports.oxmysql:execute('DELETE FROM qb_propplacing WHERE id = ?', {id}, function()
+    MySQL.Async.execute('DELETE FROM qb_propplacing WHERE id = ?', {id}, function()
         table.remove(props, indexOf(props, prop))
         TriggerClientEvent('qb-propplacing:client:playAnimation', src)
         Wait(1000)
@@ -120,7 +120,7 @@ end)
 RegisterNetEvent('qb-propplacing:server:initProps')
 AddEventHandler('qb-propplacing:server:initProps', function()
     if not spawned then
-        exports.oxmysql:execute('SELECT * FROM qb_propplacing', function(result)
+        MySQL.Async.execute('SELECT * FROM qb_propplacing', function(result)
             if result[1] then
                 for i = 1, (#result), 1 do
                     local coords = vector3(result[i].x, result[i].y, result[i].z)
@@ -153,7 +153,7 @@ end)
 
 function GeneratePropId()
     local TID = QBCore.Shared.RandomStr(3) .. "-" ..  QBCore.Shared.RandomStr(3) .. "-" .. QBCore.Shared.RandomStr(3)
-    local result = exports.oxmysql:executeSync('SELECT * FROM qb_propplacing WHERE id = ?', {TID})
+    local result = MySQL.Sync.fetchAll('SELECT * FROM qb_propplacing WHERE id = ?', {TID})
     Wait(10)
     if result[1] then
         return GenerateTempId()
